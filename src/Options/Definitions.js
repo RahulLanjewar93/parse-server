@@ -1117,6 +1117,11 @@ module.exports.DatabaseOptions = {
       'The MongoDB driver option to specify the amount of time, in milliseconds, spent attempting to send or receive on a socket before timing out. Specifying 0 means no timeout.',
     action: parsers.numberParser('socketTimeoutMS'),
   },
+  ignoreUndefined: {
+    env: 'PARSE_SERVER_DATABASE_IGNORE_UNDEFINED',
+    help: 'The MongoDB driver option to set whether to ignore undefined values in BSON documents.',
+    action: parsers.booleanParser,
+  },
 };
 module.exports.AuthAdapter = {
   enabled: {

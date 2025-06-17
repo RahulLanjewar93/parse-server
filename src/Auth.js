@@ -443,11 +443,15 @@ const findUsersWithAuthData = async (config, authData, beforeFind) => {
 };
 
 const hasMutatedAuthData = (authData, userAuthData) => {
-  if (!userAuthData) { return { hasMutatedAuthData: true, mutatedAuthData: authData }; }
+  if (!userAuthData) {
+    return { hasMutatedAuthData: true, mutatedAuthData: authData };
+  }
   const mutatedAuthData = {};
   Object.keys(authData).forEach(provider => {
     // Anonymous provider is not handled this way
-    if (provider === 'anonymous') { return; }
+    if (provider === 'anonymous') {
+      return;
+    }
     const providerData = authData[provider];
     const userProviderAuthData = userAuthData[provider];
     if (!isDeepStrictEqual(providerData, userProviderAuthData)) {
@@ -505,10 +509,15 @@ const checkIfUserHasProvidedConfiguredProvidersForLogin = (
     return;
   }
 
-  throw new Parse.Error(
-    Parse.Error.OTHER_CAUSE,
-    `Missing additional authData ${additionProvidersNotFound.join(',')}`
-  );
+  let errorMsg = `Missing additional authData ${additionProvidersNotFound.join(',')}`;
+  if (additionProvidersNotFound.length > 0) {
+    const mfaData = userAuthData.mfa || {};
+    const needsToken = !mfaData.secret;
+    const additionalInfo = needsToken ? ' Send request for additional auth data' : '';
+
+    errorMsg += additionalInfo;
+  }
+  throw new Parse.Error(Parse.Error.OTHER_CAUSE, errorMsg);
 };
 
 // Validate each authData step-by-step and return the provider responses

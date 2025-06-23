@@ -269,19 +269,20 @@ class MFAAdapter extends AuthAdapter {
     if (req.master) {
       return;
     }
+
+    let type;
     if (this.totp && authData.secret) {
-      return {
-        status: 'enabled',
-      };
+      type = 'TOTP';
+    } else if (this.sms && authData.mobile) {
+      type = 'SMS';
+    } else if (this.email && authData.email) {
+      type = 'EMAIL';
     }
-    if (this.sms && authData.mobile) {
+
+    if (type) {
       return {
         status: 'enabled',
-      };
-    }
-    if (this.email && authData.email) {
-      return {
-        status: 'enabled',
+        type,
       };
     }
     return {
